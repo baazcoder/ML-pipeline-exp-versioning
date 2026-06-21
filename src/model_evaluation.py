@@ -104,7 +104,7 @@ def main():
 
         metrics = evaluate_model(clf,X_test,y_test)
 
-        save_metrices(metrics,'reports/metrics..json')
+        save_metrices(metrics,'reports/metrics.json')
     except Exception as e:
         logger("error while evaluating model",e)
         raise

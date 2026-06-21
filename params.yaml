@@ -1,0 +1,16 @@
+data_ingestion:
+  test_size: 0.2
+  random_state: 30
+
+feature_engineer:
+  max_features: 100
+
+model_training:
+  n_estimators: 79
+  max_depth: 13
+  min_samples_split: 5
+  min_samples_leaf: 2
+  random_state: 42
+
+
+

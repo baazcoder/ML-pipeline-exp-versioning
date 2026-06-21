@@ -2,6 +2,8 @@ import pandas as pd
 import os
 import logging
 from sklearn.feature_extraction.text import TfidfVectorizer
+import yaml
+
 
 log_dir = "logs"
 if not os.path.exists(log_dir):
@@ -24,6 +26,19 @@ file_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
+
+def load_params(file_path: str):
+    try:
+        with open(file_path, 'r') as file:
+            params = yaml.safe_load(file)
+        logger.debug("Params loaded successfully from yaml file")
+        return params
+    except FileNotFoundError as fnf:
+        logger.debug("Couldn't find the file",fnf)
+        raise
+    except Exception as e:
+        logger.debug("Error occured while loading params from yaml file", e)
+        raise
 
 def load_data(file_path: str) -> pd.DataFrame:
     """Load data from a CSV file."""
@@ -77,12 +92,12 @@ def save_data(df, file_path):
     
 def main():
     try:
-        max_features = 50
-
+        params = load_params('params.yaml')
+        max_features = params['feature_engineer']['max_features']
         train_data = load_data('./data/interim/train_processed.csv')
         test_data = load_data('./data/interim/test_processed.csv')
 
-        train_df, test_df = apply_tfidf(train_data, test_data, max_features)
+        train_df, test_df = apply_tfidf(train_data, test_data, max_features = max_features)
 
         save_data(train_df, './data/processed/train_tfidf.csv')
         save_data(test_df, './data/processed/test_tfidf.csv')

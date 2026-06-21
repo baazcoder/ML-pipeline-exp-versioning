@@ -2,6 +2,7 @@ import pandas as pd
 import os
 from sklearn.model_selection import train_test_split
 import logging
+import yaml
 
 log_dir = "logs"
 if not os.path.exists(log_dir):
@@ -35,6 +36,22 @@ class DataIngestion:
         logger.debug("Starting data ingestion process")
         self.load_data()
 
+    def load_params(self, file_path: str):
+        """Loading params from yaml file"""
+        try:
+            with open(file_path, 'r') as file:
+                params = yaml.safe_load(file)
+            logger.debug("Loaded params from yaml file")
+            return params
+        except FileNotFoundError as fnf:
+            logger.debug("Couldn't find the file",fnf)
+            raise
+        except Exception as e:
+            logger.debug("Error occured while loading params from yaml file", e)
+            raise
+
+            
+
     def load_data(self) -> pd.DataFrame:
         logger.debug(f"Loading data from {self.file_path}")
         try:
@@ -56,7 +73,12 @@ class DataIngestion:
             data.rename(columns = {'v1': 'target', 'v2': 'text'}, inplace = True)
             data['target'] = data['target'].map({'ham': 0, 'spam': 1})
             logger.debug("Data preprocessing completed successfully")
-            train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
+
+            params = self.load_params('params.yaml')
+            test_size = params['data_ingestion']['test_size']
+            random_state = params['data_ingestion']['random_state']
+            train_data, test_data = train_test_split(data, test_size=test_size, random_state=random_state)
+
             self.save_data(train_data, test_data)
         except KeyError as ke:
             logger.error(f"Key error during preprocessing: {ke}")
@@ -87,4 +109,5 @@ def main():
     data_ingestion.ingest_data()
 
 if __name__ == "__main__":
+    
     main()
