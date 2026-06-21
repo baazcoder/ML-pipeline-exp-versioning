@@ -77,7 +77,7 @@ def main():
     try:
         train_data = pd.read_csv('./data/raw/train.csv')
         test_data = pd.read_csv('./data/raw/test.csv')
-        logger.info("Data loaded successfully for preprocessing")
+        logger.debug("Data loaded successfully for preprocessing")
 
         train= DataPreprocessing(train_data)
         train_processed = train.preprocess_data()
