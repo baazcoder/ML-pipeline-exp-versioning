@@ -32,14 +32,14 @@ class DataIngestion:
         self.output_path = output_path
 
     def ingest_data(self):
-        logger.info("Starting data ingestion process")
+        logger.debug("Starting data ingestion process")
         self.load_data()
 
     def load_data(self) -> pd.DataFrame:
-        logger.info(f"Loading data from {self.file_path}")
+        logger.debug(f"Loading data from {self.file_path}")
         try:
             data = pd.read_csv(self.file_path)
-            logger.info(f"Data loaded successfully with shape {data.shape}")
+            logger.debug(f"Data loaded successfully with shape {data.shape}")
             self.preprocess_data(data)
         except pd.errors.ParserError as pe:
             logger.error(f"Parsing error: {pe}")
@@ -55,7 +55,7 @@ class DataIngestion:
             data.drop(columns = ['Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4'], inplace = True)
             data.rename(columns = {'v1': 'target', 'v2': 'text'}, inplace = True)
             data['target'] = data['target'].map({'ham': 0, 'spam': 1})
-            logger.info("Data preprocessing completed successfully")
+            logger.debug("Data preprocessing completed successfully")
             train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
             self.save_data(train_data, test_data)
         except KeyError as ke:
@@ -75,7 +75,7 @@ class DataIngestion:
                 os.makedirs(raw_data_path)
             train_data.to_csv(os.path.join(raw_data_path, "train.csv"), index=False)
             test_data.to_csv(os.path.join(raw_data_path, "test.csv"), index=False)
-            logger.info(f"Data saved successfully at {self.output_path}")
+            logger.debug(f"Data saved successfully at {self.output_path}")
         except Exception as e:
             logger.error(f"Error saving data: {e}")
             raise 

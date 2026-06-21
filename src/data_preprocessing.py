@@ -18,7 +18,7 @@ logger.setLevel('DEBUG')
 console_handler = logging.StreamHandler()
 console_handler.setLevel('DEBUG')
 
-log_file_path = os.path.join(log_dir, "data_ingestion.log")
+log_file_path = os.path.join(log_dir, "data_preprocessing.log")
 file_handler = logging.FileHandler(log_file_path)
 file_handler.setLevel('DEBUG')
 
@@ -44,7 +44,7 @@ class DataPreprocessing:
             # Remove duplicate rows
             self.df = self.df.drop_duplicates(keep='first')
             logger.debug("Removed duplicate rows from the DataFrame")
-            
+
             # Tokenize the text
             self.df['text'] = self.df['text'].apply(lambda x: nltk.word_tokenize(x))
             
@@ -83,13 +83,13 @@ def main():
         train_processed = train.preprocess_data()
         test= DataPreprocessing(test_data)
         test_processed = test.preprocess_data()
-        logger.info("Data preprocessing completed successfully")
+        logger.debug("Data preprocessing completed successfully")
 
         # Save the preprocessed data
-        data_path = os.path.join('./data', 'processed')
+        data_path = os.path.join('./data', 'interim')
         os.makedirs(data_path, exist_ok=True)
-        train_processed.to_csv(os.path.join(data_path, 'train_data.csv'), index=False)
-        test_processed.to_csv(os.path.join(data_path, 'test_data.csv'), index=False)
+        train_processed.to_csv(os.path.join(data_path, 'train_processed.csv'), index=False)
+        test_processed.to_csv(os.path.join(data_path, 'test_processed.csv'), index=False)
 
         logger.debug("Preprocessed data saved successfully")
 
